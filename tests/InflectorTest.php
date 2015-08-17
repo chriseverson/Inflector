@@ -406,4 +406,32 @@ class InflectorTest extends \PHPUnit_Framework_TestCase
 	{
 		$this->assertEquals("L'été Aux Âmes Inouïes", self::$inflector->titleize("l'été_aux_âmes_inouïes"));
 	}
+
+	/**
+	 * @dataProvider provide_test_titleize
+	 *
+	 * @param string $str
+	 * @param array $except
+	 * @param string $expected
+	 */
+	public function test_titleize($str, $except, $expected)
+	{
+		$this->assertSame($expected, self::$inflector->titleize($str, $except));
+	}
+
+	public function provide_test_titleize()
+	{
+		$except = array("a", "of", "the");
+
+		return array(
+			array("man from the boondocks", array(), "Man From The Boondocks"),
+			array("man from the boondocks", $except, "Man From the Boondocks"),
+			array("x-men: the last stand", array(), "X Men: The Last Stand"),
+			array("x-men: the last stand", $except, "X Men: the Last Stand"),
+			array("TheManWithoutAPast", array(), "The Man Without A Past"),
+			array("TheManWithoutAPast", $except, "the Man Without a Past"),
+			array("raiders_of_the_lost_ark", array(), "Raiders Of The Lost Ark"),
+			array("raiders_of_the_lost_ark", $except, "Raiders of the Lost Ark")
+		);
+	}
 }

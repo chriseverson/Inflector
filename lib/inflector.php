@@ -344,8 +344,7 @@ class Inflector
 
 	/**
 	 * Capitalizes all the words and replaces some characters in the string to create a nicer
-	 * looking title. {@link titleize()} is meant for creating pretty output. It is not used in
-	 * the Rails internals.
+	 * looking title. It is meant for creating pretty output.
 	 *
 	 * <pre>
 	 * $this->titleize('man from the boondocks');  // "Man From The Boondocks"
@@ -355,21 +354,48 @@ class Inflector
 	 * </pre>
 	 *
 	 * @param string $str
+	 * @param array $except A list of words that should not be capitalized.
 	 *
 	 * @return string
 	 */
-	public function titleize($str)
+	public function titleize($str, array $except = array())
 	{
 		$str = $this->underscore($str);
 		$str = $this->humanize($str);
 
-		$str = preg_replace_callback('/\b(?<![\'’`])[[:lower:]]/u', function($matches) {
+		if ($except)
+		{
+			return $this->titleize_with_exceptions($str, $except);
+		}
+
+		return preg_replace_callback('/\b(?<![\'’`])[[:lower:]]/u', function($matches) {
 
 			return upcase($matches[0]);
 
 		}, $str);
+	}
 
-		return $str;
+	/**
+	 * Titleize words considering exceptions.
+	 *
+	 * @param string $str
+	 * @param array $except
+	 *
+	 * @return string
+	 */
+	protected function titleize_with_exceptions($str, array $except)
+	{
+		$str = downcase($str);
+
+		return preg_replace_callback('/\b(?<![\'’`])[[:lower:]]+/', function($matches) use ($except) {
+
+			$word = $matches[0];
+
+			return in_array($word, $except)
+				? $word
+				: capitalize($word);
+
+		}, $str);
 	}
 
 	/**

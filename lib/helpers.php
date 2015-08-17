@@ -145,11 +145,12 @@ function humanize($lower_case_and_underscored_word, $locale = INFLECTOR_DEFAULT_
  * Forwards calls to `Inflector::get()->titleize()`.
  *
  * @param string $str
+ * @param array $except A list of words that should not be capitalized.
  * @param string $locale Locale identifier.
  *
  * @return string
  */
-function titleize($str, $locale = INFLECTOR_DEFAULT_LOCALE)
+function titleize($str, array $except = array(), $locale = INFLECTOR_DEFAULT_LOCALE)
 {
-	return Inflector::get($locale)->titleize($str);
+	return Inflector::get($locale)->titleize($str, $except);
 }
